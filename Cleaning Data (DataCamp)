@@ -78,9 +78,49 @@ bike_share_rides_past <- bike_share_rides %>%
 # Make sure all dates from bike_share_rides_past are in the past
 assert_all_are_in_past(bike_share_rides_past$date)
 
+#Full Duplicates
+# Count the number of full duplicates
+sum(duplicated(bike_share_rides))
 
+# Remove duplicates
+bike_share_rides_unique <- distinct(bike_share_rides)
 
+# Count the full duplicates in bike_share_rides_unique
+sum(duplicated(bike_share_rides_unique))
 
+#Partial Duplicates
+# Find duplicated ride_ids
+bike_share_rides %>% 
+  # Count the number of occurrences of each ride_id
+  count(ride_id)%>% 
+  # Filter for rows with a count > 1
+  
+  # Find duplicated ride_ids
+bike_share_rides %>% 
+  count(ride_id) %>% 
+  filter(n > 1)
+
+# Remove full and partial duplicates
+bike_share_rides_unique <- bike_share_rides %>%
+  # Only based on ride_id instead of all cols
+  distinct(ride_id, .keep_all = TRUE)
+
+# Find duplicated ride_ids in bike_share_rides_unique
+bike_share_rides_unique %>%
+  # Count the number of occurrences of each ride_id
+  count(ride_id)  %>%
+  # Filter for rows with a count > 1
+   filter(n > 1)
+   
+bike_share_rides %>%
+  # Group by ride_id and date
+  group_by(ride_id, date) %>%
+  # Add duration_min_avg column
+  mutate(duration_min_avg =  mean(ride_id)) %>%
+  # Remove duplicates based on ride_id and date, keep all cols
+  distinct(ride_id, date, .keep_all = TRUE) %>%
+  # Remove duration_min column
+  select(-duration_min)
 
 
 
